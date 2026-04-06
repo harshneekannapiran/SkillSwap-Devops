@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import JWTManager
 from flask_jwt_extended.exceptions import JWTExtendedException
+import os
 
 from config import get_config
 from models import db
@@ -17,84 +18,64 @@ from routes import (
     endorsement_bp,
     forum_bp,
 )
-from flask import send_from_directory
-import os
-
 
 
 def create_app():
-    app = Flask(__name__)
+    # 🔥 IMPORTANT FIX
+    app = Flask(__name__, static_folder="static", static_url_path="")
     app.config.from_object(get_config())
 
     db.init_app(app)
     jwt = JWTManager(app)
-    
+
     # JWT error handlers
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
-        print("DEBUG: JWT token expired")
         return jsonify({"message": "Token has expired"}), 401
-    
+
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        print(f"DEBUG: Invalid JWT token: {error}")
         return jsonify({"message": "Invalid token"}), 401
-    
+
     @jwt.unauthorized_loader
     def missing_token_callback(error):
-        print(f"DEBUG: Missing JWT token: {error}")
         return jsonify({"message": "Authorization token is required"}), 401
-    
+
     @jwt.needs_fresh_token_loader
     def token_not_fresh_callback(jwt_header, jwt_payload):
-        print("DEBUG: JWT token not fresh")
         return jsonify({"message": "Fresh token required"}), 401
-    
+
     @jwt.revoked_token_loader
     def revoked_token_callback(jwt_header, jwt_payload):
-        print("DEBUG: JWT token revoked")
         return jsonify({"message": "Token has been revoked"}), 401
 
-
-    # General JWT error handler
     @app.errorhandler(JWTExtendedException)
     def jwt_extended_error_handler(error):
-        print(f"DEBUG: JWT Extended Error: {error}")
         return jsonify({"message": "Token error"}), 401
-    
+
+    # CORS
     CORS(
         app,
         resources={r"/api/*": {
-            "origins": [
-                "http://localhost:5173", 
-                "http://localhost:5174", 
-                "http://127.0.0.1:5173", 
-                "http://127.0.0.1:5174",
-                "https://*.up.railway.app"
-            ],
+            "origins": ["*"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
-            "supports_credentials": True,
+            "allow_headers": ["Content-Type", "Authorization"],
         }},
         supports_credentials=True,
     )
 
-    # Manual CORS preflight handler
-    @app.before_request
-    def handle_preflight():
-        if request.method == "OPTIONS":
-            response = jsonify()
-            response.headers.add("Access-Control-Allow-Origin", request.headers.get("Origin", "*"))
-            response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-            response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
-            response.headers.add("Access-Control-Allow-Credentials", "true")
-            return response
+    # 🔥 SERVE REACT FRONTEND (FINAL FIX)
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def serve(path):
+        full_path = os.path.join(app.static_folder, path)
 
-    @app.route("/")
-    def serve_frontend():
-            return send_from_directory("static", "index.html")
-    
+        if path != "" and os.path.exists(full_path):
+            return send_from_directory(app.static_folder, path)
 
+        return send_from_directory(app.static_folder, "index.html")
+
+    # API routes
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(skill_bp)
@@ -119,4 +100,3 @@ def create_app():
 if __name__ == "__main__":
     application = create_app()
     application.run(host="0.0.0.0", port=5000)
-

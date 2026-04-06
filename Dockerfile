@@ -27,7 +27,7 @@ RUN npm run build
 WORKDIR /app/backend
 
 # Install ALL required Python libraries
-RUN pip3 install flask flask-cors flask-jwt-extended flask-sqlalchemy
+RUN pip3 install flask flask-cors flask-jwt-extended flask-sqlalchemy pymysql
 
 # Expose backend port
 EXPOSE 5000

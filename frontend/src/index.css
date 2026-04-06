@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #6366f1;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #64748b;
+  --color-background: #ffffff;
+  --color-card: #ffffff;
+  --color-border: #e5e7eb;
+}
+
+.dark {
+  --color-primary: #818cf8;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-background: #111827;
+  --color-card: #1f2937;
+  --color-border: #374151;
+}
+
+body {
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.bg-card {
+  background-color: var(--color-card);
+}
+
+.text-text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.bg-background {
+  background-color: var(--color-background);
+}
+
+.border-border {
+  border-color: var(--color-border);
+}
+
+/* Theme-specific hover states */
+.hover\:bg-primary:hover {
+  background-color: var(--color-primary);
+}
+
+.hover\:text-primary:hover {
+  color: var(--color-primary);
+}
+
+.hover\:border-primary:hover {
+  border-color: var(--color-primary);
+}
+
+/* Dark mode specific styles */
+.dark .backdrop-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Force navbar theme application */
+.navbar-dark {
+  background-color: var(--color-card) !important;
+  border-color: var(--color-border) !important;
+}
+
+.dark .navbar-dark {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-background text-text-primary font-sans antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.primary') transparent;
+}
+
+

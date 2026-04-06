@@ -1,36 +1,31 @@
-# Use Node (for React frontend)
+# Use Node (for frontend build)
 FROM node:20-bullseye
 
 # Install Python
 RUN apt-get update && apt-get install -y python3 python3-pip
 
-# Set working directory
 WORKDIR /app
 
-# Copy project files
 COPY . .
 
 # ----------------------
-# FRONTEND (React)
+# FRONTEND BUILD
 # ----------------------
 WORKDIR /app/frontend
-
-# Install dependencies
 RUN npm install
-
-# Build React app
 RUN npm run build
 
 # ----------------------
-# BACKEND (Flask)
+# BACKEND
 # ----------------------
 WORKDIR /app/backend
 
-# Install ALL required Python libraries
 RUN pip3 install flask flask-cors flask-jwt-extended flask-sqlalchemy pymysql
 
-# Expose backend port
+# Copy built frontend into backend
+RUN mkdir -p /app/backend/static
+RUN cp -r /app/frontend/dist/* /app/backend/static/
+
 EXPOSE 5000
 
-# Run backend
 CMD ["python3", "app.py"]

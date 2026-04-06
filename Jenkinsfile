@@ -9,7 +9,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git branch: 'main', url: 'https://github.com/harshneekannapiran/SkillSwap-Devops.git'
+                git branch: 'dev', url: 'https://github.com/harshneekannapiran/SkillSwap-Devops.git'
             }
         }
 

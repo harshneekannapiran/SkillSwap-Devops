@@ -20,9 +20,7 @@ from routes import (
 from flask import send_from_directory
 import os
 
-@app.route("/")
-def serve_frontend():
-    return send_from_directory("static", "index.html")
+
 
 def create_app():
     app = Flask(__name__)
@@ -56,6 +54,10 @@ def create_app():
     def revoked_token_callback(jwt_header, jwt_payload):
         print("DEBUG: JWT token revoked")
         return jsonify({"message": "Token has been revoked"}), 401
+
+        @app.route("/")
+def serve_frontend():
+    return send_from_directory("static", "index.html")
     
     # General JWT error handler
     @app.errorhandler(JWTExtendedException)

@@ -27,7 +27,7 @@ RUN npm run build
 WORKDIR /app/backend
 
 # Install Flask (fix for Python restriction)
-RUN pip3 install flask flask-cors --break-system-packages
+RUN pip3 install flask flask-cors flask-jwt-extended --break-system-packages
 
 # Expose backend port
 EXPOSE 5000

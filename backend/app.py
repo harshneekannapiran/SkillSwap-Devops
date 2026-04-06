@@ -55,10 +55,7 @@ def create_app():
         print("DEBUG: JWT token revoked")
         return jsonify({"message": "Token has been revoked"}), 401
 
-        @app.route("/")
-def serve_frontend():
-    return send_from_directory("static", "index.html")
-    
+
     # General JWT error handler
     @app.errorhandler(JWTExtendedException)
     def jwt_extended_error_handler(error):
@@ -92,6 +89,11 @@ def serve_frontend():
             response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
             response.headers.add("Access-Control-Allow-Credentials", "true")
             return response
+
+    @app.route("/")
+    def serve_frontend():
+            return send_from_directory("static", "index.html")
+    
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)

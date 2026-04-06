@@ -17,7 +17,12 @@ from routes import (
     endorsement_bp,
     forum_bp,
 )
+from flask import send_from_directory
+import os
 
+@app.route("/")
+def serve_frontend():
+    return send_from_directory("static", "index.html")
 
 def create_app():
     app = Flask(__name__)

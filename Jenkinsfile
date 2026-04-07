@@ -3,15 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
-            steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/harshneekannapiran/SkillSwap-Devops.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t skillswap-app:${env.BRANCH_NAME} ."
+                bat "docker build -t skillswap-app ."
             }
         }
 
@@ -19,16 +13,17 @@ pipeline {
             steps {
                 script {
 
-                    if (env.BRANCH_NAME == "dev") {
+                    def branch = env.GIT_BRANCH
+
+                    if (branch.contains("dev")) {
                         bat "docker rm -f test-container || exit 0"
-                        bat "docker run -d -p 3001:5000 --name test-container skillswap-app:dev"
+                        bat "docker run -d -p 3001:5000 --name test-container skillswap-app"
                     }
 
-                    if (env.BRANCH_NAME == "main") {
+                    if (branch.contains("main")) {
                         bat "docker rm -f prod-container || exit 0"
-                        bat "docker run -d -p 3002:5000 --name prod-container skillswap-app:main"
+                        bat "docker run -d -p 3002:5000 --name prod-container skillswap-app"
                     }
-
                 }
             }
         }
